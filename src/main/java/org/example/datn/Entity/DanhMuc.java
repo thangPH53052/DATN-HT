@@ -1,8 +1,11 @@
 package org.example.datn.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.*;
+
+import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,5 +30,6 @@ public class DanhMuc {
     private Boolean trangThai;
 
     @OneToMany(mappedBy = "danhMuc")
+    @JsonIgnore
     private List<SanPham> sanPhams;
 }

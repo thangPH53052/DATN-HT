@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{view/layout}">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Kiểu dây</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    h3, h4 {
+      color: #2c3e50;
+    }
+
+    .card {
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn {
+      min-width: 100px;
+    }
+
+    .table {
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #e3f2fd;
+      cursor: pointer;
+    }
+
+    tr.table-warning {
+      background-color: #fff3cd !important;
+    }
+
+    .form-label {
+      font-weight: 500;
+    }
+
+    .form-control:focus, .form-select:focus {
+      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    #form-title {
+      font-weight: bold;
+      color: #0d6efd;
+    }
+  </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+  <div class="container mt-5">
+
+    <!-- FORM -->
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <div class="card p-4 mb-4">
+          <h4 id="form-title" class="text-center mb-3">Thêm mới kiểu dây</h4>
+          <form id="kieuDayForm">
+            <input type="hidden" id="id">
+            <div class="mb-3">
+              <label class="form-label">Mã</label>
+              <input type="text" id="ma" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tên</label>
+              <input type="text" id="ten" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Mô tả</label>
+              <textarea id="moTa" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Trạng thái</label>
+              <select id="trangThai" class="form-select">
+                <option value="true">Hoạt động</option>
+                <option value="false">Không hoạt động</option>
+              </select>
+            </div>
+            <div class="d-flex justify-content-center gap-2">
+              <button type="submit" class="btn btn-success" id="btnLuu">Thêm</button>
+              <button type="button" class="btn btn-secondary" id="btnReset">Reset</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- DANH SÁCH -->
+    <div class="row">
+      <div class="col-lg-12">
+        <h3 class="text-center mb-3">Danh sách Kiểu dây</h3>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover shadow-sm">
+            <thead class="table-dark text-center">
+              <tr>
+                <th>ID</th>
+                <th>Mã</th>
+                <th>Tên</th>
+                <th>Mô tả</th>
+                <th>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="kd : ${listKieuDay}" th:data-id="${kd.id}" class="kieuday-row text-center align-middle">
+                <td th:text="${kd.id}"></td>
+                <td th:text="${kd.ma}"></td>
+                <td th:text="${kd.ten}"></td>
+                <td th:text="${kd.moTa}"></td>
+                <td th:text="${kd.trangThai ? 'Hoạt động' : 'Không hoạt động'}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPT -->
+<div layout:fragment="scripts">
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("kieuDayForm");
+      const btnLuu = document.getElementById("btnLuu");
+      const btnReset = document.getElementById("btnReset");
+      const tbody = document.querySelector("tbody");
+
+      tbody.addEventListener("click", function (e) {
+        const row = e.target.closest(".kieuday-row");
+        if (!row) return;
+
+        document.querySelectorAll(".kieuday-row").forEach(r => r.classList.remove("table-warning"));
+        row.classList.add("table-warning");
+
+        const id = row.dataset.id;
+        fetch(`/thuoc-tinh/kieu-day/get/${id}`)
+          .then(res => res.json())
+          .then(data => {
+            document.getElementById("id").value = data.id;
+            document.getElementById("ma").value = data.ma;
+            document.getElementById("ten").value = data.ten;
+            document.getElementById("moTa").value = data.moTa;
+            document.getElementById("trangThai").value = data.trangThai.toString();
+            document.getElementById("form-title").innerText = "Cập nhật kiểu dây";
+            btnLuu.innerText = "Cập nhật";
+            form.scrollIntoView({ behavior: "smooth" });
+          })
+          .catch(err => alert("Lỗi: " + err.message));
+      });
+
+      btnReset.addEventListener("click", function () {
+        form.reset();
+        document.getElementById("id").value = "";
+        document.getElementById("form-title").innerText = "Thêm mới kiểu dây";
+        btnLuu.innerText = "Thêm";
+        document.querySelectorAll(".kieuday-row").forEach(r => r.classList.remove("table-warning"));
+      });
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const payload = {
+          id: document.getElementById("id").value || null,
+          ma: document.getElementById("ma").value,
+          ten: document.getElementById("ten").value,
+          moTa: document.getElementById("moTa").value,
+          trangThai: document.getElementById("trangThai").value === "true"
+        };
+
+        fetch("/thuoc-tinh/kieu-day/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+          .then(res => {
+            if (!res.ok) return res.text().then(text => { throw new Error(text) });
+            return res.text();
+          })
+          .then(msg => {
+            alert(msg);
+            location.reload();
+          })
+          .catch(err => alert("Lỗi: " + err.message));
+      });
+    });
+  </script>
+</div>
+
+</body>
+</html>

@@ -12,6 +12,6 @@ public class WebConfig implements WebMvcConfigurer {
         String uploadPath = System.getProperty("user.dir") + "/uploads/images/";
 
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:///" + uploadPath.replace("\\", "/")); // đảm bảo chạy cả Windows và Linux
+                .addResourceLocations("file:///" + uploadPath.replace("\\", "/")); // chạy được cả Windows và Linux
     }
 }

@@ -1,8 +1,11 @@
 package org.example.datn.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.*;
+
+import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,13 +18,20 @@ public class Voucher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
     private String ma;
-    private String ten;
+
+    @Temporal(TemporalType.DATE)
     private Date ngayBatDau;
+
+    @Temporal(TemporalType.DATE)
     private Date ngayKetThuc;
+
     private Integer phanTramGiam;
+
     private Boolean trangThai;
 
     @OneToMany(mappedBy = "voucher")
+    @JsonIgnore 
     private List<HoaDon> hoaDons;
 }

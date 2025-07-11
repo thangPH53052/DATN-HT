@@ -1,4 +1,3 @@
-// LoaiKhoaService.java
 package org.example.datn.Service;
 
 import org.example.datn.Entity.LoaiKhoa;
@@ -17,5 +16,17 @@ public class LoaiKhoaService {
 
     public List<LoaiKhoa> getAllLoaiKhoa() {
         return loaiKhoaRepository.findAll();
+    }
+
+    public LoaiKhoa getById(Integer id) {
+        return loaiKhoaRepository.findById(id).orElse(null);
+    }
+
+    public void saveOrUpdate(LoaiKhoa lk) {
+        loaiKhoaRepository.save(lk);
+    }
+
+    public void deleteById(Integer id) {
+        loaiKhoaRepository.deleteById(id);
     }
 }

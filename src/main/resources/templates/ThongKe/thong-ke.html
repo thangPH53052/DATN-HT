@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{view/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Thống kê doanh thu</title>
+</head>
+
+<div layout:fragment="content">
+    <h2>📊 Thống kê doanh thu</h2>
+
+    <label for="modeSelect">Chọn kiểu thống kê:</label>
+    <select id="modeSelect" onchange="onModeChange()">
+        <option value="ngay">Theo ngày</option>
+        <option value="thang">Theo tháng</option>
+        <option value="nam">Theo năm</option>
+    </select>
+
+    <!-- Bộ lọc thời gian -->
+    <div id="filterWrapper" style="margin-top: 10px;">
+        <input type="date" id="dateFilter" style="display: none;">
+        <input type="month" id="monthFilter" style="display: none;">
+        <input type="number" id="yearFilter" style="display: none;" placeholder="Nhập năm" min="2000" max="2100">
+    </div>
+
+    <canvas id="doanhThuChart" height="100"></canvas>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Biểu đồ -->
+    <script th:inline="javascript">
+        const dataNgay = /*[[${theoNgay}]]*/ [];
+        const dataThang = /*[[${theoThang}]]*/ [];
+        const dataNam = /*[[${theoNam}]]*/ [];
+
+        let chart;
+
+        function parseNgay(data) {
+            return data.map(r => ({
+                label: new Date(r[0]).toLocaleDateString("vi-VN"),
+                value: r[1],
+                isToday: new Date(r[0]).toDateString() === new Date().toDateString()
+            }));
+        }
+
+        function parseThang(data) {
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+            return data.map(r => ({
+                label: `Tháng ${r[0]}/${r[1]}`,
+                value: r[2],
+                isCurrent: (parseInt(r[0]) === currentMonth && parseInt(r[1]) === currentYear)
+            }));
+        }
+
+        function parseNam(data) {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            return data.map(r => ({
+                label: `Năm ${r[0]}`,
+                value: r[1],
+                isCurrent: parseInt(r[0]) === currentYear
+            }));
+        }
+
+        function onModeChange() {
+            const mode = document.getElementById("modeSelect").value;
+            document.getElementById("dateFilter").style.display = (mode === "ngay") ? "inline" : "none";
+            document.getElementById("monthFilter").style.display = (mode === "thang") ? "inline" : "none";
+            document.getElementById("yearFilter").style.display = (mode === "nam") ? "inline" : "none";
+            renderChart();
+        }
+
+        function renderChart() {
+            const mode = document.getElementById("modeSelect").value;
+            let rawData = [];
+
+            if (mode === "ngay") rawData = parseNgay(dataNgay);
+            else if (mode === "thang") rawData = parseThang(dataThang);
+            else rawData = parseNam(dataNam);
+
+            // Filter theo input nếu có
+            let filtered = rawData;
+            if (mode === "ngay") {
+                const date = document.getElementById("dateFilter").value;
+                if (date) {
+                    const formatted = new Date(date).toLocaleDateString("vi-VN");
+                    filtered = rawData.filter(item => item.label === formatted);
+                }
+            } else if (mode === "thang") {
+                const month = document.getElementById("monthFilter").value;
+                if (month) {
+                    const [yyyy, mm] = month.split("-");
+                    filtered = rawData.filter(item => item.label.includes(`Tháng ${parseInt(mm)}/${yyyy}`));
+                }
+            } else if (mode === "nam") {
+                const year = document.getElementById("yearFilter").value;
+                if (year) {
+                    filtered = rawData.filter(item => item.label.includes(`Năm ${year}`));
+                }
+            }
+
+            const ctx = document.getElementById('doanhThuChart').getContext('2d');
+            if (chart) chart.destroy();
+
+            const labels = filtered.map(r => r.label);
+            const values = filtered.map(r => r.value);
+            const backgroundColors = filtered.map(r =>
+                (r.isToday || r.isCurrent)
+                    ? 'rgba(255, 99, 132, 0.8)' // màu nổi bật
+                    : 'rgba(75, 192, 192, 0.6)' // màu mặc định
+            );
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Doanh thu (VND)',
+                        data: values,
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors.map(color => color.replace('0.6', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString("vi-VN") + " đ";
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ": " +
+                                        context.raw.toLocaleString("vi-VN") + " đ";
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            onModeChange();
+            document.getElementById("dateFilter").addEventListener("change", renderChart);
+            document.getElementById("monthFilter").addEventListener("change", renderChart);
+            document.getElementById("yearFilter").addEventListener("input", renderChart);
+        });
+    </script>
+</div>
+</html>

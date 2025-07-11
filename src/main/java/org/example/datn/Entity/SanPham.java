@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -65,8 +66,22 @@ public class SanPham {
     @OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HinhAnhSanPham> hinhAnhList;
 
+    // ✅ Mỗi sản phẩm có thể gắn 1 khuyến mãi (nếu có)
+    @ManyToOne
+    @JoinColumn(name = "IDKhuyenMai")
+    private KhuyenMai khuyenMai;
+
     public SanPham(Integer id) {
         this.id = id;
     }
 
+    @Transient
+    public List<String> getHinhAnhUrls() {
+        if (hinhAnhList == null || hinhAnhList.isEmpty()) {
+            return List.of();
+        }
+        return hinhAnhList.stream()
+                .map(HinhAnhSanPham::getUrl)
+                .collect(Collectors.toList());
+    }
 }

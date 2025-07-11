@@ -1,8 +1,5 @@
 package org.example.datn.Controller;
 
-import java.util.List;
-import java.util.Map;
-
 import org.example.datn.Service.*;
 import org.example.datn.dto.SanPhamDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/san-pham")
@@ -28,47 +26,64 @@ public class SanPhamController {
     @Autowired
     private KieuDayService kieuDayService;
 
-    @Autowired
-    private SanPhamChiTietService sanPhamChiTietService;
-    @Autowired
-    private MauSacService mauSacService;
-    @Autowired
-    private KichThuocService kichThuocService;
-    @Autowired
-    private KhuyenMaiService khuyenMaiService;
-
-    // Hiển thị danh sách sản phẩm
-    // Hiển thị danh sách sản phẩm có phân trang
+    // Xem danh sách
     @GetMapping("/view")
-    public String viewSanPham(@RequestParam(defaultValue = "0") int page, Model model) {
-        org.springframework.data.domain.Page<SanPhamDTO> sanPhamPage = sanPhamService.getAllSanPham(page);
+    public String viewSanPham(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer idDanhMuc,
+            @RequestParam(required = false) Integer idThuongHieu,
+            @RequestParam(required = false) Integer idChatLieu,
+            @RequestParam(required = false) Integer idLoaiKhoa,
+            @RequestParam(required = false) Integer idKieuDay,
+            Model model,
+            @ModelAttribute("successMessage") String successMessage,
+            @ModelAttribute("errorMessage") String errorMessage) {
+
+        var sanPhamPage = sanPhamService.searchSanPham(keyword, idDanhMuc, idThuongHieu, idChatLieu, idLoaiKhoa,
+                idKieuDay, page);
+
         model.addAttribute("sanPhams", sanPhamPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", sanPhamPage.getTotalPages());
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("idDanhMuc", idDanhMuc);
+        model.addAttribute("idThuongHieu", idThuongHieu);
+        model.addAttribute("idChatLieu", idChatLieu);
+        model.addAttribute("idLoaiKhoa", idLoaiKhoa);
+        model.addAttribute("idKieuDay", idKieuDay);
+
         model.addAttribute("danhMucs", danhMucService.getAllDanhMuc());
         model.addAttribute("thuongHieus", thuongHieuService.getAllThuongHieu());
         model.addAttribute("chatLieus", chatLieuService.getAllChatLieu());
         model.addAttribute("loaiKhoas", loaiKhoaService.getAllLoaiKhoa());
         model.addAttribute("kieuDays", kieuDayService.getAllKieuDay());
+
+        model.addAttribute("successMessage", successMessage);
+        model.addAttribute("errorMessage", errorMessage);
 
         return "ViewSanPham/index";
     }
 
-    // Hiển thị form thêm sản phẩm
+    // Form thêm sản phẩm
     @GetMapping("/add")
-    public String showAddForm(Model model) {
+    public String showAddForm(Model model,
+            @ModelAttribute("errorMessage") String errorMessage,
+            @ModelAttribute("successMessage") String successMessage) {
         model.addAttribute("danhMucs", danhMucService.getAllDanhMuc());
         model.addAttribute("thuongHieus", thuongHieuService.getAllThuongHieu());
         model.addAttribute("chatLieus", chatLieuService.getAllChatLieu());
         model.addAttribute("loaiKhoas", loaiKhoaService.getAllLoaiKhoa());
         model.addAttribute("kieuDays", kieuDayService.getAllKieuDay());
+        model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute("successMessage", successMessage);
         return "ViewSanPham/add";
     }
 
-    // Lưu sản phẩm và trả về ID
-    @PostMapping("/api/save")
-    @ResponseBody
-    public Integer apiSaveSanPham(
+    // Lưu sản phẩm mới
+    @PostMapping("/save")
+    public String saveSanPham(
             @RequestParam("ma") String ma,
             @RequestParam("ten") String ten,
             @RequestParam("idDanhMuc") Integer idDanhMuc,
@@ -81,36 +96,57 @@ public class SanPhamController {
             @RequestParam(value = "dungTich", required = false) Float dungTich,
             @RequestParam(value = "kichThuoc", required = false) String kichThuoc,
             @RequestParam("trangThai") Boolean trangThai,
-            @RequestParam(value = "hinhAnhs", required = false) MultipartFile[] hinhAnhs) {
-        return sanPhamService.addSanPham(ma, ten, idDanhMuc, idChatLieu, idLoaiKhoa, idKieuDay,
-                idThuongHieu, moTa, canNang, dungTich, kichThuoc, trangThai, hinhAnhs);
+            @RequestParam(value = "hinhAnhs", required = false) MultipartFile[] hinhAnhs,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            if (ma == null || ma.trim().isEmpty() || ten == null || ten.trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "⚠️ Vui lòng nhập đầy đủ mã và tên sản phẩm.");
+                return "redirect:/san-pham/add";
+            }
+
+            if (sanPhamService.existsByMa(ma)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "❌ Mã sản phẩm đã tồn tại.");
+                return "redirect:/san-pham/add";
+            }
+
+            sanPhamService.addSanPham(ma, ten, idDanhMuc, idChatLieu, idLoaiKhoa, idKieuDay,
+                    idThuongHieu, moTa, canNang, dungTich, kichThuoc, trangThai, hinhAnhs);
+
+            redirectAttributes.addFlashAttribute("successMessage", "✅ Thêm sản phẩm thành công!");
+            return "redirect:/san-pham/view";
+
+        } catch (Exception e) {
+            String message = e.getMessage();
+            if (message != null && message.toLowerCase().contains("unique")
+                    && message.toLowerCase().contains("sanpham")) {
+                redirectAttributes.addFlashAttribute("errorMessage", "❌ Mã sản phẩm đã tồn tại trong hệ thống.");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "❌ Đã xảy ra lỗi khi thêm sản phẩm.");
+            }
+            return "redirect:/san-pham/add";
+        }
     }
 
-    // Lấy sản phẩm theo ID
-    @GetMapping("/api/{id}")
-    @ResponseBody
-    public SanPhamDTO getSanPhamDTOById(@PathVariable("id") Integer id) {
-        return sanPhamService.getSanPhamDTOById(id);
-    }
-
-    // Hiển thị form chỉnh sửa
+    // Form cập nhật
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Integer id, Model model) {
-        SanPhamDTO sanPhamDTO = sanPhamService.getSanPhamDTOById(id);
-        if (sanPhamDTO == null) {
+    public String showEditForm(@PathVariable("id") Integer id, Model model,
+            @ModelAttribute("successMessage") String successMessage,
+            @ModelAttribute("errorMessage") String errorMessage) {
+        SanPhamDTO sanPham = sanPhamService.getSanPhamDTOById(id);
+        if (sanPham == null) {
             return "redirect:/san-pham/view";
         }
 
-        model.addAttribute("sanPham", sanPhamDTO);
+        model.addAttribute("sanPham", sanPham);
         model.addAttribute("danhMucs", danhMucService.getAllDanhMuc());
         model.addAttribute("thuongHieus", thuongHieuService.getAllThuongHieu());
         model.addAttribute("chatLieus", chatLieuService.getAllChatLieu());
         model.addAttribute("loaiKhoas", loaiKhoaService.getAllLoaiKhoa());
         model.addAttribute("kieuDays", kieuDayService.getAllKieuDay());
-        model.addAttribute("chiTiets", sanPhamChiTietService.getBySanPhamId(id));
-        model.addAttribute("mauSacs", mauSacService.getAllMauSac());
-        model.addAttribute("kichThuocs", kichThuocService.getAllKichThuoc());
-        model.addAttribute("khuyenMais", khuyenMaiService.getAllKhuyenMai());
+        model.addAttribute("successMessage", successMessage);
+        model.addAttribute("errorMessage", errorMessage);
+
         return "ViewSanPham/update";
     }
 
@@ -130,20 +166,31 @@ public class SanPhamController {
             @RequestParam(value = "dungTich", required = false) Float dungTich,
             @RequestParam(value = "kichThuoc", required = false) String kichThuoc,
             @RequestParam("trangThai") Boolean trangThai,
-            @RequestParam(value = "hinhAnhs", required = false) MultipartFile[] hinhAnhs) {
+            @RequestParam(value = "hinhAnhs", required = false) MultipartFile[] hinhAnhs,
+            RedirectAttributes redirectAttributes) {
 
-        sanPhamService.updateSanPham(id, ma, ten, idDanhMuc, idChatLieu, idLoaiKhoa,
-                idKieuDay, idThuongHieu, moTa, canNang, dungTich, kichThuoc, trangThai, hinhAnhs);
-        return "redirect:/san-pham/view";
+        try {
+            if (sanPhamService.isMaTrungKhiUpdate(id, ma)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "❌ Mã sản phẩm đã tồn tại ở sản phẩm khác.");
+                return "redirect:/san-pham/edit/" + id;
+            }
+
+            sanPhamService.updateSanPham(id, ma, ten, idDanhMuc, idChatLieu, idLoaiKhoa,
+                    idKieuDay, idThuongHieu, moTa, canNang, dungTich, kichThuoc, trangThai, hinhAnhs);
+
+            redirectAttributes.addFlashAttribute("successMessage", "✅ Cập nhật sản phẩm thành công!");
+            return "redirect:/san-pham/view";
+
+        } catch (Exception e) {
+            String message = e.getMessage();
+            if (message != null && message.toLowerCase().contains("unique")
+                    && message.toLowerCase().contains("sanpham")) {
+                redirectAttributes.addFlashAttribute("errorMessage", "❌ Mã sản phẩm đã tồn tại trong hệ thống.");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "❌ Đã xảy ra lỗi khi cập nhật sản phẩm.");
+            }
+            return "redirect:/san-pham/edit/" + id;
+        }
     }
 
-    // Form chi tiết sản phẩm (AJAX)
-    @GetMapping("/san-pham-chi-tiet/add")
-    public String showFormChiTiet(@RequestParam("sanPhamId") Integer sanPhamId, Model model) {
-        model.addAttribute("sanPhamId", sanPhamId);
-        model.addAttribute("mauSacs", mauSacService.getAllMauSac());
-        model.addAttribute("kichThuocs", kichThuocService.getAllKichThuoc());
-        model.addAttribute("khuyenMais", khuyenMaiService.getAllKhuyenMai());
-        return "ViewSanPhamChiTiet/fragment_form_chi_tiet :: formChiTiet";
-    }
 }

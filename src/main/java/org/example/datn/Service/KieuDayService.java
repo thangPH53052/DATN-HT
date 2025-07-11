@@ -1,4 +1,3 @@
-// KieuDayService.java
 package org.example.datn.Service;
 
 import org.example.datn.Entity.KieuDay;
@@ -17,5 +16,17 @@ public class KieuDayService {
 
     public List<KieuDay> getAllKieuDay() {
         return kieuDayRepository.findAll();
+    }
+
+    public KieuDay getById(Integer id) {
+        return kieuDayRepository.findById(id).orElse(null);
+    }
+
+    public void saveOrUpdate(KieuDay kd) {
+        kieuDayRepository.save(kd);
+    }
+
+    public void deleteById(Integer id) {
+        kieuDayRepository.deleteById(id);
     }
 }

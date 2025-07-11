@@ -1,0 +1,48 @@
+<!-- templates/HoaDon/index.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{view/layout}">
+<head>
+  <meta charset="UTF-8" />
+  <title>Danh sách Hóa đơn</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body>
+<div layout:fragment="content">
+  <div class="container mt-4">
+    <h2 class="text-center mb-4">Quản lý Hóa đơn</h2>
+
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Ngày tạo</th>
+          <th>Trạng thái</th>
+          <th>Tổng tiền</th>
+          <th>Khách hàng</th>
+          <th>Nhân viên</th>
+          <th>Voucher</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="hd : ${hoaDons}">
+          <td th:text="${hd.id}">1</td>
+          <td th:text="${#dates.format(hd.ngayTao, 'dd/MM/yyyy')}">01/01/2025</td>
+          <td th:text="${hd.trangThai == 0 ? 'Chờ thanh toán' : (hd.trangThai == 1 ? 'Đã thanh toán' : 'Đã hủy')}">---</td>
+          <td th:text="${#numbers.formatDecimal(hd.tongTien, 0, 'POINT', 2, 'COMMA')}">100000</td>
+          <td th:text="${hd.khachHang != null ? hd.khachHang.ten : '---'}">Khách</td>
+          <td th:text="${hd.nhanVien != null ? hd.nhanVien.ten : '---'}">Nhân viên</td>
+          <td th:text="${hd.voucher != null ? hd.voucher.ma : '---'}">Voucher</td>
+          <td>
+            <a th:href="@{'/hoa-don/chi-tiet-form/' + ${hd.id}}" class="btn btn-primary btn-sm">Xem</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

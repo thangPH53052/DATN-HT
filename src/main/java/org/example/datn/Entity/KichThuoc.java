@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,10 +22,11 @@ public class KichThuoc {
 
     @Column(nullable = false)
     private String ten;
-
+    private String moTa;
     private Boolean trangThai;
 
     @OneToMany(mappedBy = "kichThuoc")
+    @JsonIgnore
     private List<SanPhamChiTiet> chiTietList;
 
     public KichThuoc(Integer id) {

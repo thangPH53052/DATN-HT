@@ -1,253 +1,271 @@
 <!DOCTYPE html>
-<html
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{view/layout}"
->
-  <head>
-    <title>Chỉnh sửa sản phẩm</title>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{view/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cập nhật sản phẩm</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
     <style>
-      form {
-        max-width: 800px;
-        margin: 0 auto;
-      }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+        }
 
-      form div {
-        margin-bottom: 15px;
-      }
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+        }
 
-      label {
-        display: inline-block;
-        width: 150px;
-        font-weight: bold;
-      }
+        form {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 30px 40px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+        }
 
-      input[type="text"],
-      input[type="number"],
-      select,
-      textarea {
-        width: calc(100% - 160px);
-        padding: 5px;
-      }
+        .form-group {
+            display: flex;
+            margin-bottom: 16px;
+        }
 
-      button {
-        padding: 8px 20px;
-        margin-right: 10px;
-        font-size: 14px;
-      }
+        .form-group label {
+            width: 150px;
+            font-weight: 500;
+            margin-right: 10px;
+        }
 
-      .img-preview {
-        width: 100px;
-        margin: 5px;
-      }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-save {
+            background: #007bff;
+            color: white;
+            padding: 12px 28px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #0056b3;
+        }
+
+        .img-preview {
+            height: 80px;
+            margin: 4px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .back-link {
+            max-width: 900px;
+            margin: 0 auto 20px;
+            text-align: left;
+        }
+
+        .back-link a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        small.note {
+            display: block;
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 5px;
+        }
     </style>
-  </head>
-  <body>
-    <div layout:fragment="content">
-      <h1 style="text-align: center">Cập nhật Sản phẩm</h1>
+</head>
 
-      <form
-        th:action="@{'/san-pham/update/' + ${sanPham.id}}"
-        method="post"
-        enctype="multipart/form-data"
-      >
-        <div>
-          <label>Mã:</label>
-          <input type="text" name="ma" th:value="${sanPham.ma}" required />
-        </div>
+<body>
+<div layout:fragment="content">
+    <h1>Cập nhật sản phẩm</h1>
 
-        <div>
-          <label>Tên:</label>
-          <input type="text" name="ten" th:value="${sanPham.ten}" required />
-        </div>
-
-        <div>
-          <label>Danh mục:</label>
-          <select name="idDanhMuc" required>
-            <option
-              th:each="dm : ${danhMucs}"
-              th:value="${dm.id}"
-              th:selected="${dm.id == sanPham.danhMucId}"
-              th:text="${dm.ten}"
-            ></option>
-          </select>
-        </div>
-
-        <div>
-          <label>Chất liệu:</label>
-          <select name="idChatLieu" required>
-            <option
-              th:each="cl : ${chatLieus}"
-              th:value="${cl.id}"
-              th:selected="${cl.id == sanPham.chatLieuId}"
-              th:text="${cl.ten}"
-            ></option>
-          </select>
-        </div>
-
-        <div>
-          <label>Loại khóa:</label>
-          <select name="idLoaiKhoa" required>
-            <option
-              th:each="lk : ${loaiKhoas}"
-              th:value="${lk.id}"
-              th:selected="${lk.id == sanPham.loaiKhoaId}"
-              th:text="${lk.ten}"
-            ></option>
-          </select>
-        </div>
-
-        <div>
-          <label>Kiểu dây:</label>
-          <select name="idKieuDay" required>
-            <option
-              th:each="kd : ${kieuDays}"
-              th:value="${kd.id}"
-              th:selected="${kd.id == sanPham.kieuDayId}"
-              th:text="${kd.ten}"
-            ></option>
-          </select>
-        </div>
-
-        <div>
-          <label>Thương hiệu:</label>
-          <select name="idThuongHieu" required>
-            <option
-              th:each="thh : ${thuongHieus}"
-              th:value="${thh.id}"
-              th:selected="${thh.id == sanPham.thuongHieuId}"
-              th:text="${thh.ten}"
-            ></option>
-          </select>
-        </div>
-
-        <div>
-          <label>Mô tả:</label>
-          <textarea name="moTa" th:text="${sanPham.moTa}"></textarea>
-        </div>
-
-        <div>
-          <label>Trọng lượng (kg):</label>
-          <input
-            type="number"
-            step="0.01"
-            name="canNang"
-            th:value="${sanPham.canNang}"
-          />
-        </div>
-
-        <div>
-          <label>Dung tích (L):</label>
-          <input
-            type="number"
-            step="0.01"
-            name="dungTich"
-            th:value="${sanPham.dungTich}"
-          />
-        </div>
-
-        <div>
-          <label>Kích thước:</label>
-          <input type="text" name="kichThuoc" th:value="${sanPham.kichThuoc}" />
-        </div>
-
-        <div>
-          <label>Trạng thái:</label>
-          <select name="trangThai" required>
-            <option th:value="true" th:selected="${sanPham.trangThai}">
-              Đang bán
-            </option>
-            <option th:value="false" th:selected="${!sanPham.trangThai}">
-              Ngừng bán
-            </option>
-          </select>
-        </div>
-
-        <div>
-          <label>Ảnh hiện tại:</label>
-          <div th:if="${sanPham.hinhAnhUrls != null}">
-            <img
-              th:each="url : ${sanPham.hinhAnhUrls}"
-              th:src="@{'/images/' + ${url}}"
-              class="img-preview"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label>Thay ảnh mới:</label>
-          <input type="file" name="hinhAnhs" multiple />
-        </div>
-
-        <div style="text-align: center; margin-top: 30px">
-          <button type="submit">Cập nhật</button>
-          <a th:href="@{/san-pham/view}">
-            <button type="button">Quay lại</button>
-          </a>
-        </div>
-      </form>
-      <hr />
-      <h2 style="text-align: center">Cập nhật chi tiết sản phẩm</h2>
-
-      <form th:action="@{/san-pham-chi-tiet/update-multiple}" method="post">
-        <div th:each="ct : ${chiTiets}" class="chi-tiet-item">
-          <input type="hidden" name="chiTietIds" th:value="${ct.id}" />
-
-          <label>Màu sắc:</label>
-          <select name="idMauSac">
-            <option
-              th:each="m : ${mauSacs}"
-              th:value="${m.id}"
-              th:selected="${m.id == ct.mauSac.id}"
-              th:text="${m.ten}"
-            ></option></select
-          ><br />
-
-          <label>Kích thước:</label>
-          <select name="idKichThuoc">
-            <option
-              th:each="k : ${kichThuocs}"
-              th:value="${k.id}"
-              th:selected="${k.id == ct.kichThuoc.id}"
-              th:text="${k.ten}"
-            ></option></select
-          ><br />
-
-          <label>Khuyến mãi:</label>
-          <select name="idKhuyenMai">
-            <option value="">Không áp dụng</option>
-            <option
-              th:each="km : ${khuyenMais}"
-              th:value="${km.id}"
-              th:selected="${ct.khuyenMai != null and km.id == ct.khuyenMai.id}"
-              th:text="${km.ten}"
-            ></option></select
-          ><br />
-
-          <label>Giá bán:</label>
-          <input
-            type="number"
-            name="giaBan"
-            step="0.01"
-            th:value="${ct.giaBan}"
-          /><br />
-
-          <label>Giá nhập:</label>
-          <input
-            type="number"
-            name="giaNhap"
-            step="0.01"
-            th:value="${ct.giaNhap}"
-          /><br />
-
-          <label>Số lượng:</label>
-          <input type="number" name="soLuong" th:value="${ct.soLuong}" /><br />
-        </div>
-
-        <div style="text-align: center">
-          <button type="submit">Cập nhật chi tiết</button>
-        </div>
-      </form>
+    <div class="back-link">
+        <a th:href="@{/san-pham/view}">← Quay lại danh sách</a>
     </div>
-  </body>
+
+    <form th:action="@{'/san-pham/update/' + ${sanPham.id}}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Mã sản phẩm:</label>
+            <input type="text" name="ma" th:value="${sanPham.ma}" required />
+        </div>
+
+        <div class="form-group">
+            <label>Tên sản phẩm:</label>
+            <input type="text" name="ten" th:value="${sanPham.ten}" required />
+        </div>
+
+        <div class="form-group">
+            <label>Danh mục:</label>
+            <select name="idDanhMuc" required>
+                <option value="">-- Chọn danh mục --</option>
+                <option th:each="dm : ${danhMucs}" th:value="${dm.id}" th:selected="${dm.id == sanPham.danhMucId}" th:text="${dm.ten}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Chất liệu:</label>
+            <select name="idChatLieu" required>
+                <option value="">-- Chọn chất liệu --</option>
+                <option th:each="cl : ${chatLieus}" th:value="${cl.id}" th:selected="${cl.id == sanPham.chatLieuId}" th:text="${cl.ten}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Loại khóa:</label>
+            <select name="idLoaiKhoa" required>
+                <option value="">-- Chọn loại khóa --</option>
+                <option th:each="lk : ${loaiKhoas}" th:value="${lk.id}" th:selected="${lk.id == sanPham.loaiKhoaId}" th:text="${lk.ten}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Kiểu dây:</label>
+            <select name="idKieuDay" required>
+                <option value="">-- Chọn kiểu dây --</option>
+                <option th:each="kd : ${kieuDays}" th:value="${kd.id}" th:selected="${kd.id == sanPham.kieuDayId}" th:text="${kd.ten}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Thương hiệu:</label>
+            <select name="idThuongHieu" required>
+                <option value="">-- Chọn thương hiệu --</option>
+                <option th:each="th : ${thuongHieus}" th:value="${th.id}" th:selected="${th.id == sanPham.thuongHieuId}" th:text="${th.ten}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Mô tả:</label>
+            <textarea name="moTa" th:text="${sanPham.moTa}"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Trọng lượng:</label>
+            <input type="number" name="canNang" step="0.01" th:value="${sanPham.canNang}" />
+        </div>
+
+        <div class="form-group">
+            <label>Dung tích:</label>
+            <input type="number" name="dungTich" step="0.01" th:value="${sanPham.dungTich}" />
+        </div>
+
+        <div class="form-group">
+            <label>Kích thước:</label>
+            <input type="text" name="kichThuoc" th:value="${sanPham.kichThuoc}" />
+        </div>
+
+        <div class="form-group">
+            <label>Trạng thái:</label>
+            <select name="trangThai" required>
+                <option th:value="true" th:selected="${sanPham.trangThai}">Đang bán</option>
+                <option th:value="false" th:selected="${!sanPham.trangThai}">Ngừng bán</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Ảnh hiện tại:</label>
+            <div th:if="${sanPham.hinhAnhUrls != null}">
+                <img th:each="url : ${sanPham.hinhAnhUrls}" th:src="@{'/images/' + ${url}}" class="img-preview" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Ảnh mới:</label>
+            <div style="flex: 1;">
+                <input type="file" name="hinhAnhs" multiple />
+                <small class="note">* Nếu chọn ảnh mới, toàn bộ ảnh cũ sẽ bị xóa và thay thế.</small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-save">💾 Cập nhật sản phẩm</button>
+        </div>
+    </form>
+</div>
+
+<!-- ✅ JS Hiển thị SweetAlert -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let success = /*[[${successMessage}]]*/ null;
+    let error = /*[[${errorMessage}]]*/ null;
+
+    if (success !== null) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công',
+            text: success,
+            confirmButtonText: 'OK'
+        });
+    }
+
+    if (error !== null) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: error,
+            confirmButtonText: 'OK'
+        });
+    }
+    /*]]>*/
+</script>
+
+<!-- ✅ JS bắt lỗi required -->
+<script>
+    document.querySelector("form").addEventListener("submit", function (e) {
+        const requiredFields = [
+            "ma", "ten", "idDanhMuc", "idChatLieu",
+            "idLoaiKhoa", "idKieuDay", "idThuongHieu", "trangThai"
+        ];
+        let valid = true;
+        let firstInvalid = null;
+
+        requiredFields.forEach(fieldName => {
+            const input = document.querySelector(`[name="${fieldName}"]`);
+            if (!input || input.value.trim() === "") {
+                input.style.border = "2px solid red";
+                if (!firstInvalid) firstInvalid = input;
+                valid = false;
+            } else {
+                input.style.border = "1px solid #ccc";
+            }
+        });
+
+        if (!valid) {
+            e.preventDefault();
+            if (firstInvalid) firstInvalid.focus();
+            Swal.fire({
+                icon: "warning",
+                title: "Thiếu thông tin",
+                text: "Vui lòng điền đầy đủ các trường bắt buộc!",
+                confirmButtonText: "OK"
+            });
+        }
+    });
+</script>
+</body>
 </html>

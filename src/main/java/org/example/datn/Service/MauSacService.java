@@ -21,10 +21,6 @@ public class MauSacService {
         return mauSacRepository.findById(id).orElse(null);
     }
 
-    public MauSac getByMa(String ma) {
-        return mauSacRepository.findByMa(ma);
-    }
-
     public MauSac saveOrUpdate(MauSac mauSac) {
         return mauSacRepository.save(mauSac);
     }

@@ -11,10 +11,7 @@ import java.util.List;
 public class SanPhamChiTietService {
 
     @Autowired
-    private SanPhamChiTietRepository sanPhamChiTietRepository;
-
-    @Autowired
-    private SanPhamRepository sanPhamRepository;
+    private SanPhamChiTietRepository repository;
 
     @Autowired
     private MauSacRepository mauSacRepository;
@@ -24,45 +21,45 @@ public class SanPhamChiTietService {
 
     @Autowired
     private KhuyenMaiRepository khuyenMaiRepository;
+    @Autowired
+    private SanPhamRepository sanPhamRepository;
 
     public List<SanPhamChiTiet> getAll() {
-        return sanPhamChiTietRepository.findAll();
+        return repository.findAll();
     }
 
-    public List<SanPhamChiTiet> getBySanPhamId(Integer sanPhamId) {
-        return sanPhamChiTietRepository.findBySanPham_Id(sanPhamId);
+    public List<SanPhamChiTiet> getFullInfo() {
+        return repository.getSanPhamDangBanFull();
     }
 
     public SanPhamChiTiet getById(Integer id) {
-        return sanPhamChiTietRepository.findById(id).orElse(null);
+        return repository.findById(id).orElse(null);
     }
 
-    public void saveChiTiet(
-            Integer idSanPham,
-            Integer idMauSac,
-            Integer idKichThuoc,
-            Integer idKhuyenMai,
-            Double giaBan,
-            Double giaNhap,
-            Integer soLuong) {
+    public void add(Integer idSanPham, Integer idMauSac, Integer idKichThuoc,
+            Integer idKhuyenMai, Double giaBan, Double giaNhap,
+            Integer soLuong, Boolean trangThai) {
 
-        SanPhamChiTiet chiTiet = new SanPhamChiTiet();
+        SanPhamChiTiet ct = new SanPhamChiTiet();
+        ct.setSanPham(new SanPham(idSanPham));
+        ct.setMauSac(new MauSac(idMauSac));
+        ct.setKichThuoc(new KichThuoc(idKichThuoc));
+        ct.setKhuyenMai(idKhuyenMai != null ? new KhuyenMai(idKhuyenMai) : null);
+        ct.setGiaBan(giaBan);
+        ct.setGiaNhap(giaNhap);
+        ct.setSoLuong(soLuong);
+        ct.setTrangThai(trangThai != null ? trangThai : true);
 
-        chiTiet.setSanPham(new SanPham(idSanPham));
-        chiTiet.setMauSac(new MauSac(idMauSac));
-        chiTiet.setKichThuoc(new KichThuoc(idKichThuoc));
-        chiTiet.setKhuyenMai(idKhuyenMai != null ? new KhuyenMai(idKhuyenMai) : null);
-        chiTiet.setGiaBan(giaBan);
-        chiTiet.setGiaNhap(giaNhap);
-        chiTiet.setSoLuong(soLuong);
-
-        sanPhamChiTietRepository.save(chiTiet);
+        repository.save(ct);
     }
 
-    public void updateChiTiet(Integer id, Integer idMauSac, Integer idKichThuoc, Integer idKhuyenMai,
-                               Double giaBan, Double giaNhap, Integer soLuong) {
-        SanPhamChiTiet ct = sanPhamChiTietRepository.findById(id).orElse(null);
-        if (ct == null) return;
+    public void update(Integer id, Integer idMauSac, Integer idKichThuoc,
+            Integer idKhuyenMai, Double giaBan, Double giaNhap,
+            Integer soLuong, Boolean trangThai) {
+
+        SanPhamChiTiet ct = repository.findById(id).orElse(null);
+        if (ct == null)
+            return;
 
         ct.setMauSac(mauSacRepository.findById(idMauSac).orElse(null));
         ct.setKichThuoc(kichThuocRepository.findById(idKichThuoc).orElse(null));
@@ -70,11 +67,46 @@ public class SanPhamChiTietService {
         ct.setGiaBan(giaBan);
         ct.setGiaNhap(giaNhap);
         ct.setSoLuong(soLuong);
+        ct.setTrangThai(trangThai != null ? trangThai : true);
 
-        sanPhamChiTietRepository.save(ct);
+        repository.save(ct);
     }
 
-    public void deleteById(Integer id) {
-        sanPhamChiTietRepository.deleteById(id);
+    public void delete(Integer id) {
+        repository.deleteById(id);
     }
+
+    public SanPhamChiTiet findById(Integer id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    public void update(Integer id, Integer idSanPham, Integer idMauSac, Integer idKichThuoc,
+            Integer idKhuyenMai, Double giaBan, Double giaNhap, Integer soLuong, Boolean trangThai) {
+
+        SanPhamChiTiet ct = repository.findById(id).orElse(null);
+        if (ct != null) {
+            ct.setSanPham(sanPhamRepository.findById(idSanPham).orElse(null));
+            ct.setMauSac(mauSacRepository.findById(idMauSac).orElse(null));
+            ct.setKichThuoc(kichThuocRepository.findById(idKichThuoc).orElse(null));
+            ct.setKhuyenMai(idKhuyenMai != null ? khuyenMaiRepository.findById(idKhuyenMai).orElse(null) : null);
+            ct.setGiaBan(giaBan);
+            ct.setGiaNhap(giaNhap);
+            ct.setSoLuong(soLuong);
+            ct.setTrangThai(trangThai);
+            repository.save(ct);
+        }
+    }
+
+    public void chuyenTrangThai(Integer id) {
+        SanPhamChiTiet ct = repository.findById(id).orElse(null);
+        if (ct != null) {
+            ct.setTrangThai(!ct.getTrangThai()); // Đảo trạng thái
+            repository.save(ct);
+        }
+    }
+
+    public boolean isExist(Integer idSanPham, Integer idMauSac, Integer idKichThuoc) {
+        return repository.existsBySanPham_IdAndMauSac_IdAndKichThuoc_Id(idSanPham, idMauSac, idKichThuoc);
+    }
+
 }

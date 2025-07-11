@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatLieuRepository extends JpaRepository<ChatLieu, Integer> {
-    // KHÔNG cần tự viết findById nữa, JpaRepository có sẵn rồi.
+    
 }

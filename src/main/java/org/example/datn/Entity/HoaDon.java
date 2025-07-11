@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 
+@Entity
+@Table(name = "HoaDon")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "HoaDon")
 public class HoaDon {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -20,15 +21,15 @@ public class HoaDon {
     private Double tongTien;
 
     @ManyToOne
-    @JoinColumn(name = "idKhachHang")
+    @JoinColumn(name = "IDKhachHang")
     private KhachHang khachHang;
 
     @ManyToOne
-    @JoinColumn(name = "idNhanVien")
+    @JoinColumn(name = "IDNhanVien")
     private NhanVien nhanVien;
 
     @ManyToOne
-    @JoinColumn(name = "idVoucher")
+    @JoinColumn(name = "IDVoucher")
     private Voucher voucher;
 
     @OneToMany(mappedBy = "hoaDon")
