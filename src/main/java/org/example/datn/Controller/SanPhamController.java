@@ -6,10 +6,12 @@ import java.util.stream.Collectors;
 import org.example.datn.Entity.SanPham;
 import org.example.datn.Entity.SanPhamChiTiet;
 import org.example.datn.Repository.SanPhamChiTietRepository;
+import org.example.datn.Repository.SanPhamRepository;
 import org.example.datn.Response.SanPhamResponse;
 import org.example.datn.Service.*;
 import org.example.datn.dto.SanPhamDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,8 @@ public class SanPhamController {
     private KieuDayService kieuDayService;
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
+    @Autowired
+    private SanPhamRepository sanPhamRepository;
 
     // Xem danh sách
     @GetMapping("/view")
@@ -206,25 +210,35 @@ public class SanPhamController {
     @GetMapping("/api/dang-ban")
     @ResponseBody
     public List<SanPhamResponse> getSanPhamDangBan() {
-        List<SanPhamChiTiet> danhSach = sanPhamChiTietRepository.findAll();
+        List<SanPham> danhSach = sanPhamRepository.findAll();
 
         return danhSach.stream()
-                .filter(spct -> spct.getSoLuong() != null && spct.getSoLuong() > 0 &&
-                        spct.getSanPham() != null &&
-                        Boolean.TRUE.equals(spct.getSanPham().getTrangThai()))
-                .map(spct -> {
-                    SanPham sanPham = spct.getSanPham();
-                    String tenSanPham = sanPham.getTen();
-                    String hinhAnh = (sanPham.getHinhAnhList() != null && !sanPham.getHinhAnhList().isEmpty())
-                            ? "/uploads/images/" + sanPham.getHinhAnhList().get(0).getUrl()
+                .filter(sp -> {
+                    // Kiểm tra sản phẩm có bật trạng thái
+                    if (!Boolean.TRUE.equals(sp.getTrangThai()))
+                        return false;
+
+                    // Kiểm tra có ít nhất 1 chi tiết sản phẩm có số lượng > 0
+                    return sp.getSanPhamChiTietList().stream()
+                            .anyMatch(spct -> spct.getSoLuong() != null && spct.getSoLuong() > 0);
+                })
+                .map(sp -> {
+                    // Tính tổng số lượng tồn từ các chi tiết sản phẩm
+                    int tongSoLuong = sp.getSanPhamChiTietList().stream()
+                            .filter(spct -> spct.getSoLuong() != null)
+                            .mapToInt(SanPhamChiTiet::getSoLuong)
+                            .sum();
+
+                    String hinhAnh = (sp.getHinhAnhList() != null && !sp.getHinhAnhList().isEmpty())
+                            ? "/uploads/images/" + sp.getHinhAnhList().get(0).getUrl()
                             : "img/default.jpg";
 
                     return new SanPhamResponse(
-                            spct.getId(),
-                            tenSanPham,
-                            spct.getGiaBan(),
+                            sp.getId(),
+                            sp.getTen(),
+                            sp.getSanPhamChiTietList().get(0).getGiaBan(), // lấy giá từ bản ghi đầu tiên
                             hinhAnh,
-                            spct.getSoLuong());
+                            tongSoLuong);
                 })
                 .collect(Collectors.toList());
     }

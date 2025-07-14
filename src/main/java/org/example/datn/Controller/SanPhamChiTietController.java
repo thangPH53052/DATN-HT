@@ -1,8 +1,10 @@
 package org.example.datn.Controller;
 
 import org.example.datn.Entity.SanPhamChiTiet;
+import org.example.datn.Response.SanPhamResponse;
 import org.example.datn.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -135,6 +137,19 @@ public class SanPhamChiTietController {
         model.addAttribute("mauSacList", mauSacService.getAllMauSac());
         model.addAttribute("kichThuocList", kichThuocService.getAllKichThuoc());
         model.addAttribute("khuyenMaiList", khuyenMaiService.getAllKhuyenMai());
+    }
+
+    @GetMapping("/api/{id}")
+    public ResponseEntity<SanPhamResponse> getSanPhamById(@PathVariable Integer id) {
+        SanPhamResponse sp = chiTietService.layChiTietSanPham(id);
+        if (sp == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(sp);
+    }
+
+    @GetMapping("/detail/{id}")
+    public String chiTietSanPhamPage(@PathVariable("id") Integer id, Model model) {
+        return "redirect:/chitietsanpham.html?id=" + id;
     }
 
 }

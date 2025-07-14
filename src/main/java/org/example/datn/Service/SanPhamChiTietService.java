@@ -2,6 +2,8 @@ package org.example.datn.Service;
 
 import org.example.datn.Entity.*;
 import org.example.datn.Repository.*;
+import org.example.datn.Response.SanPhamResponse;
+import org.example.datn.dto.SanPhamDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -107,6 +109,27 @@ public class SanPhamChiTietService {
 
     public boolean isExist(Integer idSanPham, Integer idMauSac, Integer idKichThuoc) {
         return repository.existsBySanPham_IdAndMauSac_IdAndKichThuoc_Id(idSanPham, idMauSac, idKichThuoc);
+    }
+
+    public SanPhamResponse layChiTietSanPham(Integer id) {
+        SanPhamChiTiet spct = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm chi tiết với id: " + id));
+
+        SanPham sp = spct.getSanPham();
+        if (sp == null) {
+            throw new RuntimeException("Sản phẩm cha không tồn tại.");
+        }
+
+        String hinhAnh = (sp.getHinhAnhList() != null && !sp.getHinhAnhList().isEmpty())
+                ? "/uploads/images/" + sp.getHinhAnhList().get(0).getUrl()
+                : "img/default.jpg";
+
+        return new SanPhamResponse(
+                spct.getId(),
+                sp.getTen(),
+                spct.getGiaBan(),
+                hinhAnh,
+                spct.getSoLuong());
     }
 
 }

@@ -84,4 +84,8 @@ public class SanPham {
                 .map(HinhAnhSanPham::getUrl)
                 .collect(Collectors.toList());
     }
+
+    @OneToMany(mappedBy = "sanPham")
+    private List<SanPhamChiTiet> sanPhamChiTietList;
+
 }

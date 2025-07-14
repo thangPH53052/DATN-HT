@@ -58,42 +58,45 @@
     </section>
 
     <script>
-        async function loadProductDetail() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get("id");
+       async function loadProductDetail() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
 
-            if (!id) {
-                document.getElementById("productNotFound").style.display = 'block';
-                return;
-            }
+    if (!id) {
+        document.getElementById("productNotFound").style.display = 'block';
+        return;
+    }
 
-            try {
-                const res = await fetch(`/san-pham/api/${id}`);
-                if (!res.ok) throw new Error("Không tìm thấy sản phẩm");
+    try {
+        const res = await fetch(`/san-pham-chi-tiet/api/${id}`);
+        if (!res.ok) throw new Error("Không tìm thấy sản phẩm");
 
-                const data = await res.json();
+        const data = await res.json();
 
-                document.getElementById("productName").textContent = data.ten;
-                document.getElementById("productPrice").innerHTML = `<strong>Giá:</strong> ${data.giaBan?.toLocaleString('vi-VN')}₫`;
-                document.getElementById("productQuantity").innerHTML = `<strong>Số lượng còn lại:</strong> ${data.soLuongTon || 'Không rõ'}`;
+        document.title = data.tenSanPham + ' - Chi tiết sản phẩm';
+        document.getElementById("productName").textContent = data.tenSanPham;
 
-                if (data.hinhAnhUrls && data.hinhAnhUrls.length > 0) {
-                    document.getElementById("mainImage").src = `/uploads/images/${data.hinhAnhUrls[0]}`;
-                } else {
-                    document.getElementById("mainImage").src = "/img/default.jpg";
-                }
+        const giaBan = data.giaBan || 0;
+        document.getElementById("productPrice").innerHTML = `<strong>Giá:</strong> ${giaBan.toLocaleString('vi-VN')}₫`;
 
-                document.getElementById("btnAddToCart").onclick = () => themVaoGioHang(id);
-                document.querySelector(".chitietSanpham").style.display = 'block';
+        const soLuong = data.soLuongTon ?? 'Không rõ';
+        document.getElementById("productQuantity").innerHTML = `<strong>Số lượng còn lại:</strong> ${soLuong}`;
 
-            } catch (err) {
-                console.error(err);
-                document.getElementById("productNotFound").style.display = 'block';
-            }
-        }
+        const img = data.hinhAnh || "/img/default.jpg";
+        document.getElementById("mainImage").src = img;
 
+        document.getElementById("btnAddToCart").onclick = () => themVaoGioHang(data.id);
+
+        document.querySelector(".chitietSanpham").style.display = 'block';
+
+    } catch (err) {
+        console.error("Lỗi tải sản phẩm:", err);
+        document.getElementById("productNotFound").style.display = 'block';
+    }
+}    
         loadProductDetail();
     </script>
+    
 
     <script>addContainTaiKhoan();</script>
     <div class="footer"><script>addFooter();</script></div>
