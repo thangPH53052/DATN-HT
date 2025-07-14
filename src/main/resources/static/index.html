@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Thế giới điện thoại</title>
+	<link rel="shortcut icon" href="img/favicon.ico" />
+
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+	 crossorigin="anonymous">
+
+	<!-- Owl Carousel -->
+	<link rel="stylesheet" href="js/owlcarousel/owl.carousel.min.css">
+	<link rel="stylesheet" href="js/owlcarousel/owl.theme.default.min.css">
+	<script src="js/Jquery/Jquery.min.js"></script>
+	<script src="js/owlcarousel/owl.carousel.min.js"></script>
+
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/topnav.css">
+	<link rel="stylesheet" href="css/header.css">
+	<link rel="stylesheet" href="css/banner.css">
+	<link rel="stylesheet" href="css/taikhoan.css">
+	<link rel="stylesheet" href="css/trangchu.css">
+	<link rel="stylesheet" href="css/home_products.css">
+	<link rel="stylesheet" href="css/pagination_phantrang.css">
+	<link rel="stylesheet" href="css/footer.css">
+
+	<!-- Custom JS -->
+	<script src="js/classes.js"></script>
+	<script src="js/dungchung.js"></script>
+	<script src="js/trangchu.js"></script>
+</head>
+
+<body>
+	<script> addTopNav(); </script>
+
+	<section>
+		<script> addHeader(); </script>
+
+		<div class="banner">
+			<div class="owl-carousel owl-theme"></div>
+		</div>
+
+		<img src="img/banners/blackFriday.gif" alt="" style="width: 100%;">
+
+		<br>
+		<div class="companyMenu group flexContain"></div>
+
+		<div class="flexContain">
+			<div class="pricesRangeFilter dropdown">
+				<button class="dropbtn">Giá tiền</button>
+				<div class="dropdown-content"></div>
+			</div>
+
+			<div class="promosFilter dropdown">
+				<button class="dropbtn">Khuyến mãi</button>
+				<div class="dropdown-content"></div>
+			</div>
+
+			<div class="starFilter dropdown">
+				<button class="dropbtn">Số lượng sao</button>
+				<div class="dropdown-content"></div>
+			</div>
+
+			<div class="sortFilter dropdown">
+				<button class="dropbtn">Sắp xếp</button>
+				<div class="dropdown-content"></div>
+			</div>
+		</div>
+
+		<div class="choosedFilter flexContain">
+			<a id="deleteAllFilter" style="display: none;">
+				<h3>Xóa bộ lọc</h3>
+			</a>
+		</div>
+		<hr>
+
+		<div class="contain-products" style="display:none">
+			<div class="filterName">
+				<input type="text" placeholder="Lọc trong trang theo tên..." onkeyup="filterProductsName(this)">
+			</div>
+
+			<ul id="products" class="homeproduct group flexContain">
+				<div id="khongCoSanPham">
+					<i class="fa fa-times-circle"></i>
+					Không có sản phẩm nào
+				</div>
+			</ul>
+
+			<div class="pagination"></div>
+		</div>
+
+		<div class="contain-khungSanPham"></div>
+	</section>
+
+	<script> addContainTaiKhoan(); addPlc(); </script>
+	<div class="footer"><script>addFooter();</script></div>
+
+	<i class="fa fa-arrow-up" id="goto-top-page" onclick="gotoTop()"></i>
+
+	<!-- Load sản phẩm từ backend -->
+	<script>
+		async function loadSanPhamDangBan() {
+			try {
+				const response = await fetch('/san-pham/api/dang-ban');
+				const data = await response.json();
+	
+				const container = document.getElementById('products');
+				const khongCoSanPham = document.getElementById('khongCoSanPham');
+	
+				// Xóa dữ liệu cũ nếu có
+				container.innerHTML = '';
+	
+				if (data.length === 0) {
+					khongCoSanPham.style.display = 'block';
+					return;
+				}
+				khongCoSanPham.style.display = 'none';
+	
+				data.forEach(sp => {
+					const li = document.createElement('li');
+					li.className = 'sanPham'; // <- Quan trọng để filter nhận ra
+	
+					li.innerHTML = `
+						<div class="product-card">
+							<img src="${sp.hinhAnh}" alt="${sp.tenSanPham}" />
+							<h3>${sp.tenSanPham}</h3>
+							<div class="price">${sp.giaBan.toLocaleString('vi-VN')}₫</div>
+							<div class="soLuong">Còn lại: ${sp.soLuongTon}</div>
+							<div class="product-hover">
+								<a href="/san-pham/detail/${sp.id}" class="btn btn-detail">Xem chi tiết</a>
+								<button class="btn btn-cart" onclick="themVaoGioHang(${sp.id})">Thêm vào giỏ</button>
+							</div>
+						</div>
+					`;
+	
+					container.appendChild(li);
+				});
+	
+				document.querySelector('.contain-products').style.display = 'block';
+			} catch (err) {
+				console.error("Lỗi khi load sản phẩm: ", err);
+			}
+		}
+		window.addEventListener("DOMContentLoaded", loadSanPhamDangBan);
+	</script>	
+</body>
+
+</html>

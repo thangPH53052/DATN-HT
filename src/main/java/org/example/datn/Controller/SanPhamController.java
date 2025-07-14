@@ -1,5 +1,12 @@
 package org.example.datn.Controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.example.datn.Entity.SanPham;
+import org.example.datn.Entity.SanPhamChiTiet;
+import org.example.datn.Repository.SanPhamChiTietRepository;
+import org.example.datn.Response.SanPhamResponse;
 import org.example.datn.Service.*;
 import org.example.datn.dto.SanPhamDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/san-pham")
+@CrossOrigin(origins = "*")
 public class SanPhamController {
 
     @Autowired
@@ -25,6 +33,8 @@ public class SanPhamController {
     private LoaiKhoaService loaiKhoaService;
     @Autowired
     private KieuDayService kieuDayService;
+    @Autowired
+    private SanPhamChiTietRepository sanPhamChiTietRepository;
 
     // Xem danh sách
     @GetMapping("/view")
@@ -191,6 +201,32 @@ public class SanPhamController {
             }
             return "redirect:/san-pham/edit/" + id;
         }
+    }
+
+    @GetMapping("/api/dang-ban")
+    @ResponseBody
+    public List<SanPhamResponse> getSanPhamDangBan() {
+        List<SanPhamChiTiet> danhSach = sanPhamChiTietRepository.findAll();
+
+        return danhSach.stream()
+                .filter(spct -> spct.getSoLuong() != null && spct.getSoLuong() > 0 &&
+                        spct.getSanPham() != null &&
+                        Boolean.TRUE.equals(spct.getSanPham().getTrangThai()))
+                .map(spct -> {
+                    SanPham sanPham = spct.getSanPham();
+                    String tenSanPham = sanPham.getTen();
+                    String hinhAnh = (sanPham.getHinhAnhList() != null && !sanPham.getHinhAnhList().isEmpty())
+                            ? "/uploads/images/" + sanPham.getHinhAnhList().get(0).getUrl()
+                            : "img/default.jpg";
+
+                    return new SanPhamResponse(
+                            spct.getId(),
+                            tenSanPham,
+                            spct.getGiaBan(),
+                            hinhAnh,
+                            spct.getSoLuong());
+                })
+                .collect(Collectors.toList());
     }
 
 }

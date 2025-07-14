@@ -1,0 +1,128 @@
+#khongCoSanPham {
+	opacity: 0;
+	width: 0;
+	color: red;
+	font-size: 30px;
+	font-weight: bold;
+	height: 310px;
+	display: none;
+}
+
+.homeproduct {
+	list-style-type: none;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 20px;
+	padding: 20px;
+	background-color: #f9f9f9;
+}
+
+.sanPham {
+	width: 240px;
+	list-style: none;
+	position: relative;
+	border: 1px solid #ddd;
+	border-radius: 10px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	background: white;
+	transition: transform 0.3s ease;
+	overflow: hidden;
+}
+
+.sanPham:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.product-card {
+	position: relative;
+	padding: 10px;
+	text-align: center;
+}
+
+.product-card img {
+	width: 200px;
+	height: 200px;
+	object-fit: contain;
+	margin-bottom: 10px;
+}
+
+.product-card h3 {
+	font-size: 16px;
+	color: #333;
+	min-height: 45px;
+	margin-bottom: 8px;
+	font-weight: bold;
+}
+
+.product-card .price {
+	color: #e10c00;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+.product-card .soLuong {
+	font-size: 13px;
+	color: #666;
+	margin: 5px 0 10px;
+}
+
+.product-hover {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(0, 0, 0, 0.5);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.3s ease;
+}
+
+.sanPham:hover .product-hover {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.product-hover a,
+.product-hover button {
+	background-color: #fff;
+	border: none;
+	padding: 8px 12px;
+	margin: 6px;
+	cursor: pointer;
+	border-radius: 5px;
+	font-weight: bold;
+	transition: background-color 0.3s ease;
+	text-decoration: none;
+}
+
+.product-hover a {
+	color: #007bff;
+}
+
+.product-hover button {
+	color: #28a745;
+}
+
+.product-hover a:hover,
+.product-hover button:hover {
+	background-color: #f1f1f1;
+}
+
+@media screen and (max-width: 768px) {
+	.sanPham {
+		width: 45%;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.sanPham {
+		width: 100%;
+	}
+}

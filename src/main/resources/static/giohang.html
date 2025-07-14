@@ -1,0 +1,67 @@
+<script>
+	// Gọi API để lấy giỏ hàng của người dùng hiện tại
+	async function loadGioHang() {
+		const userId = localStorage.getItem("currentUserId"); // Đảm bảo bạn đã lưu userId sau khi login
+
+		if (!userId) {
+			alert("Bạn chưa đăng nhập");
+			window.location.href = "/login.html";
+			return;
+		}
+
+		try {
+			const res = await fetch(`/api/giohang/${userId}`);
+			const data = await res.json();
+			renderGioHang(data);
+		} catch (err) {
+			console.error("Lỗi khi tải giỏ hàng:", err);
+		}
+	}
+
+	// Hiển thị giỏ hàng ra bảng
+	function renderGioHang(ds) {
+		const table = document.querySelector(".listSanPham");
+		table.innerHTML = `
+			<tr>
+				<th>STT</th>
+				<th>Sản phẩm</th>
+				<th>Số lượng</th>
+				<th>Giá</th>
+				<th>Thành tiền</th>
+				<th>Hành động</th>
+			</tr>
+		`;
+
+		ds.forEach((item, index) => {
+			const thanhTien = item.soLuong * item.giaBan;
+			table.innerHTML += `
+				<tr>
+					<td>${index + 1}</td>
+					<td>${item.tenSanPham} - ${item.mauSac} - ${item.kichThuoc}</td>
+					<td>
+						<input type="number" min="1" value="${item.soLuong}" onchange="capNhatSoLuong(${item.id}, this.value)">
+					</td>
+					<td>${item.giaBan.toLocaleString()}đ</td>
+					<td>${thanhTien.toLocaleString()}đ</td>
+					<td><button onclick="xoaKhoiGio(${item.id})">Xóa</button></td>
+				</tr>
+			`;
+		});
+	}
+
+	async function capNhatSoLuong(id, soLuong) {
+		await fetch(`/api/giohang/${id}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ soLuong: Number(soLuong) })
+		});
+		loadGioHang();
+	}
+
+	async function xoaKhoiGio(id) {
+		await fetch(`/api/giohang/${id}`, { method: 'DELETE' });
+		loadGioHang();
+	}
+
+	window.onload = loadGioHang;
+</script>

@@ -1,0 +1,48 @@
+<tr>
+    <td>Mã sản phẩm:</td>
+    <td><input id="ma" type="text" placeholder="SP001 hoặc để trống để backend tự sinh"></td>
+</tr>
+<tr>
+    <td>Tên sản phẩm:</td>
+    <td><input id="name" type="text"></td>
+</tr>
+<tr>
+    <td>Thương hiệu:</td>
+    <td>
+        <select id="company">
+            <option value="1">Nike</option>
+            <option value="2">Adidas</option>
+            <option value="3">Anello</option>
+            <option value="4">SimpleCarry</option>
+            <!-- ... lấy từ bảng `ThuongHieu` -->
+        </select>
+    </td>
+</tr>
+<tr>
+    <td>Đường dẫn ảnh:</td>
+    <td><input id="img" type="text" placeholder="VD: balo1.jpg"></td>
+</tr>
+<tr>
+    <td>Giá bán:</td>
+    <td><input id="price" type="number"></td>
+</tr>
+<tr>
+    <td>Khuyến mãi:</td>
+    <td>
+        <select id="promoName">
+            <option value="">Không có</option>
+            <option value="1">Giảm 10%</option>
+            <option value="2">Tặng quà</option>
+            <option value="3">Giảm giá Online</option>
+            <!-- ... lấy từ bảng `KhuyenMai` -->
+        </select>
+    </td>
+</tr>
+<tr>
+    <td>Số sao:</td>
+    <td><input id="star" type="number" min="0" max="5"></td>
+</tr>
+<tr>
+    <td>Lượt đánh giá:</td>
+    <td><input id="rateCount" type="number" min="0"></td>
+</tr>
