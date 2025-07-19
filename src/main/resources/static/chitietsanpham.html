@@ -1,105 +1,195 @@
 <!DOCTYPE html>
 <html lang="vi">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chi tiết sản phẩm</title>
-    <link rel="shortcut icon" href="/img/favicon.ico" />
+    <link rel="shortcut icon" href="img/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="js/owlcarousel/owl.carousel.min.css" />
+    <link rel="stylesheet" href="js/owlcarousel/owl.theme.default.min.css" />
+    <script src="js/Jquery/Jquery.min.js"></script>
+    <script src="js/owlcarousel/owl.carousel.min.js"></script>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-        crossorigin="anonymous">
+    <!-- Your CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/topnav.css" />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/taikhoan.css" />
+    <link rel="stylesheet" href="css/trangchu.css" />
+    <link rel="stylesheet" href="css/home_products.css" />
+    <link rel="stylesheet" href="css/chitietsanpham.css" />
+    <link rel="stylesheet" href="css/footer.css" />
+  </head>
 
-    <!-- Owl Carousel -->
-    <link rel="stylesheet" href="/js/owlcarousel/owl.carousel.min.css">
-    <link rel="stylesheet" href="/js/owlcarousel/owl.theme.default.min.css">
-    <script src="/js/Jquery/Jquery.min.js"></script>
-    <script src="/js/owlcarousel/owl.carousel.min.js"></script>
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/topnav.css">
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/chitietsanpham.css">
-    <link rel="stylesheet" href="/css/footer.css">
-</head>
-
-<body>
-    <script> addTopNav(); </script>
+  <body>
+    <script>
+      addTopNav();
+    </script>
 
     <section>
-        <script> addHeader(); </script>
+      <script>
+        addHeader();
+      </script>
 
-        <div id="productNotFound" style="min-height: 50vh; text-align: center; margin: 50px; display: none;">
-            <h1 style="color: red; margin-bottom: 10px;">Không tìm thấy sản phẩm</h1>
-            <a href="/index.html" style="text-decoration: underline;">Quay lại trang chủ</a>
-        </div>
+      <div
+        id="productNotFound"
+        style="
+          min-height: 50vh;
+          text-align: center;
+          margin: 50px;
+          display: none;
+        "
+      >
+        <h1 style="color: red; margin-bottom: 10px">Không tìm thấy sản phẩm</h1>
+        <a href="index.html" style="text-decoration: underline"
+          >Quay lại trang chủ</a
+        >
+      </div>
 
-        <div class="chitietSanpham" style="margin-bottom: 100px; display:none">
-            <h1 id="productName">Tên sản phẩm</h1>
-            <div class="rowdetail group">
-                <div class="picture">
-                    <img id="mainImage" src="" alt="" onclick="opencertain()">
+      <div class="chitietSanpham" style="margin-bottom: 100px">
+        <h1>Đang tải...</h1>
+        <div class="rating"></div>
+        <div class="rowdetail group">
+          <div class="picture">
+            <img src="" onclick="opencertain()" />
+          </div>
+          <div class="price_sale">
+            <div class="area_price"></div>
+            <div class="area_promo">
+              <strong>Khuyến mãi</strong>
+              <div class="promo">
+                <img src="img/chitietsanpham/icon-tick.png" />
+                <div id="detailPromo">
+                  Giảm giá trực tiếp tại trang sản phẩm
                 </div>
-                <div class="price_sale">
-                    <div class="area_price" id="productPrice"></div>
-                    <div class="so_luong" id="productQuantity"></div>
-                    <div class="area_order">
-                        <a class="buy_now" id="btnAddToCart">
-                            <b><i class="fa fa-cart-plus"></i> Thêm vào giỏ hàng</b>
-                            <p>Giao nhanh hoặc nhận tại cửa hàng</p>
-                        </a>
-                    </div>
-                </div>
+              </div>
             </div>
+            <div class="policy">
+              <!-- <div><img src="img/chitietsanpham/box.png"><p>Trong hộp có: Sạc, Tai nghe, Sách hướng dẫn, Ốp lưng</p></div> -->
+              <div>
+                <img src="img/chitietsanpham/icon-baohanh.png" />
+                <p>Bảo hành chính hãng 12 tháng.</p>
+              </div>
+              <div class="last">
+                <img src="img/chitietsanpham/1-1.jpg" />
+                <p>1 đổi 1 trong 1 tháng nếu lỗi kỹ thuật.</p>
+              </div>
+            </div>
+            <div class="area_order">
+              <a
+                class="buy_now"
+                onclick="themVaoGioHang(maProduct, nameProduct);"
+              >
+                <b><i class="fa fa-cart-plus"></i> Thêm vào giỏ hàng</b>
+                <p>Giao trong 1 giờ hoặc nhận tại cửa hàng</p>
+              </a>
+            </div>
+          </div>
+          <div class="info_product">
+            <h2>Thông số kỹ thuật</h2>
+            <ul class="info"></ul>
+          </div>
         </div>
+
+        <!-- Overlay zoom -->
+        <div id="overlaycertainimg" class="overlaycertainimg">
+          <div class="close" onclick="closecertain()">&times;</div>
+          <div class="overlaycertainimg-content">
+            <img id="bigimg" class="bigimg" src="" />
+            <div class="div_smallimg owl-carousel"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="goiYSanPham"></div>
     </section>
 
     <script>
-       async function loadProductDetail() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get("id");
-
-    if (!id) {
-        document.getElementById("productNotFound").style.display = 'block';
-        return;
-    }
-
-    try {
-        const res = await fetch(`/san-pham-chi-tiet/api/${id}`);
-        if (!res.ok) throw new Error("Không tìm thấy sản phẩm");
-
-        const data = await res.json();
-
-        document.title = data.tenSanPham + ' - Chi tiết sản phẩm';
-        document.getElementById("productName").textContent = data.tenSanPham;
-
-        const giaBan = data.giaBan || 0;
-        document.getElementById("productPrice").innerHTML = `<strong>Giá:</strong> ${giaBan.toLocaleString('vi-VN')}₫`;
-
-        const soLuong = data.soLuongTon ?? 'Không rõ';
-        document.getElementById("productQuantity").innerHTML = `<strong>Số lượng còn lại:</strong> ${soLuong}`;
-
-        const img = data.hinhAnh || "/img/default.jpg";
-        document.getElementById("mainImage").src = img;
-
-        document.getElementById("btnAddToCart").onclick = () => themVaoGioHang(data.id);
-
-        document.querySelector(".chitietSanpham").style.display = 'block';
-
-    } catch (err) {
-        console.error("Lỗi tải sản phẩm:", err);
-        document.getElementById("productNotFound").style.display = 'block';
-    }
-}    
-        loadProductDetail();
+      addContainTaiKhoan();
     </script>
-    
+    <div class="footer">
+      <script>
+        addFooter();
+      </script>
+    </div>
 
-    <script>addContainTaiKhoan();</script>
-    <div class="footer"><script>addFooter();</script></div>
-</body>
+    <!-- SCRIPT xử lý dữ liệu sản phẩm -->
+    <!-- SCRIPT xử lý dữ liệu sản phẩm -->
+    <script>
+      function loadChiTietSanPham() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get("id");
 
+        if (!id) return;
+
+        // ✅ Sửa đường dẫn fetch cho đúng với Controller: /san-pham-chi-tiet/api/{id}
+        fetch(`/san-pham-chi-tiet/api/${id}`)
+          .then((res) => (res.ok ? res.json() : Promise.reject("Not Found")))
+          .then((data) => {
+            document.querySelector("h1").innerText = data.tenSanPham;
+            document.querySelector(".picture img").src =
+              data.hinhAnhUrls[0] || "/images/default.jpg";
+            document.getElementById("bigimg").src =
+              data.hinhAnhUrls[0] || "/images/default.jpg";
+
+            // Giá bán và giá khuyến mãi
+            document.querySelector(
+              ".area_price"
+            ).innerHTML = `<strong>${data.giaSauKhuyenMai.toLocaleString()}₫</strong>
+                 <span style="text-decoration: line-through; color: gray;">${data.giaBan.toLocaleString()}₫</span>`;
+
+            // Gán các hình ảnh nhỏ
+            const smallImgs = document.querySelector(".div_smallimg");
+            smallImgs.innerHTML = data.hinhAnhUrls
+              .map((url) => `<img src="${url}" onclick="changepic(this.src)">`)
+              .join("");
+            $(".div_smallimg").owlCarousel({ items: 3, margin: 10 });
+
+            // Thông số kỹ thuật
+            const info = document.querySelector(".info");
+            info.innerHTML = `
+                <li>Thương hiệu: ${data.thuongHieu}</li>
+                <li>Chất liệu: ${data.chatLieu}</li>
+                <li>Loại khóa: ${data.loaiKhoa}</li>
+                <li>Kiểu dây: ${data.kieuDay}</li>
+                <li>Danh mục: ${data.danhMuc}</li>
+                <li>Màu sắc: ${data.mauSac}</li>
+                <li>Kích thước phân loại: ${data.kichThuocPhanLoai}</li>
+                <li>Kích thước: ${data.kichThuoc}</li>
+                <li>Khối lượng: ${data.canNang} kg</li>
+                <li>Dung tích: ${data.dungTich} lít</li>
+                <li>Mô tả: ${data.moTa}</li>
+                <li>Số lượng còn: ${data.soLuong}</li>
+            `;
+
+            // Gán vào biến toàn cục nếu dùng để thêm vào giỏ hàng
+            window.maProduct = data.id;
+            window.nameProduct = data.tenSanPham;
+          })
+          .catch(() => {
+            document.getElementById("productNotFound").style.display = "block";
+            document.querySelector(".chitietSanpham").style.display = "none";
+          });
+      }
+
+      function changepic(src) {
+        document.getElementById("bigimg").src = src;
+        document.querySelector(".picture img").src = src;
+      }
+
+      function opencertain() {
+        document.getElementById("overlaycertainimg").style.display = "block";
+      }
+      function closecertain() {
+        document.getElementById("overlaycertainimg").style.display = "none";
+      }
+
+      document.addEventListener("DOMContentLoaded", loadChiTietSanPham);
+    </script>
+  </body>
 </html>

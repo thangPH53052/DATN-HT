@@ -1,6 +1,7 @@
 package org.example.datn.Controller;
 
 import org.example.datn.Entity.SanPhamChiTiet;
+import org.example.datn.Response.SPACTResponse;
 import org.example.datn.Response.SanPhamResponse;
 import org.example.datn.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,12 +141,15 @@ public class SanPhamChiTietController {
     }
 
     @GetMapping("/api/{id}")
-    public ResponseEntity<SanPhamResponse> getSanPhamById(@PathVariable Integer id) {
-        SanPhamResponse sp = chiTietService.layChiTietSanPham(id);
-        if (sp == null)
-            return ResponseEntity.notFound().build();
+public ResponseEntity<SPACTResponse> getSanPhamById(@PathVariable Integer id) {
+    try {
+        SPACTResponse sp = chiTietService.layChiTietSanPham(id);
         return ResponseEntity.ok(sp);
+    } catch (Exception e) {
+        return ResponseEntity.notFound().build();
     }
+}
+
 
     @GetMapping("/detail/{id}")
     public String chiTietSanPhamPage(@PathVariable("id") Integer id, Model model) {

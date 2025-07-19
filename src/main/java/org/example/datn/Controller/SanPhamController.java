@@ -214,31 +214,35 @@ public class SanPhamController {
 
         return danhSach.stream()
                 .filter(sp -> {
-                    // Kiểm tra sản phẩm có bật trạng thái
+                    // Chỉ lấy sản phẩm có trạng thái bật
                     if (!Boolean.TRUE.equals(sp.getTrangThai()))
                         return false;
 
-                    // Kiểm tra có ít nhất 1 chi tiết sản phẩm có số lượng > 0
+                    // Và có ít nhất 1 chi tiết có số lượng > 0
                     return sp.getSanPhamChiTietList().stream()
                             .anyMatch(spct -> spct.getSoLuong() != null && spct.getSoLuong() > 0);
                 })
                 .map(sp -> {
-                    // Tính tổng số lượng tồn từ các chi tiết sản phẩm
+                    // Tính tổng tồn kho từ các chi tiết
                     int tongSoLuong = sp.getSanPhamChiTietList().stream()
                             .filter(spct -> spct.getSoLuong() != null)
                             .mapToInt(SanPhamChiTiet::getSoLuong)
                             .sum();
 
                     String hinhAnh = (sp.getHinhAnhList() != null && !sp.getHinhAnhList().isEmpty())
-                            ? "/uploads/images/" + sp.getHinhAnhList().get(0).getUrl()
-                            : "img/default.jpg";
+                            ? "/images/" + sp.getHinhAnhList().get(0).getUrl() // <-- Đường dẫn đúng với WebConfig
+                            : "/images/default.jpg"; // <-- Bạn nên đặt ảnh mặc định tại uploads/images/default.jpg
+
+                    Double giaBan = sp.getSanPhamChiTietList().isEmpty()
+                            ? 0.0
+                            : sp.getSanPhamChiTietList().get(0).getGiaBan();
 
                     return new SanPhamResponse(
                             sp.getId(),
                             sp.getTen(),
-                            sp.getSanPhamChiTietList().get(0).getGiaBan(), // lấy giá từ bản ghi đầu tiên
-                            hinhAnh,
-                            tongSoLuong);
+                            giaBan,
+                            hinhAnh
+                            );
                 })
                 .collect(Collectors.toList());
     }

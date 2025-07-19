@@ -16,6 +16,10 @@ public class HinhAnhSanPham {
 
     private String url;
 
+    @Lob
+    @Column(name = "duLieuAnh")
+    private byte[] duLieuAnh;
+
     @ManyToOne
     @JoinColumn(name = "idSanPham")
     private SanPham sanPham;

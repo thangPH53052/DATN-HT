@@ -10,7 +10,7 @@
 
 	<!-- Font Awesome -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-	 crossorigin="anonymous">
+		crossorigin="anonymous">
 
 	<!-- Owl Carousel -->
 	<link rel="stylesheet" href="js/owlcarousel/owl.carousel.min.css">
@@ -108,46 +108,59 @@
 			try {
 				const response = await fetch('/san-pham/api/dang-ban');
 				const data = await response.json();
-	
+
 				const container = document.getElementById('products');
 				const khongCoSanPham = document.getElementById('khongCoSanPham');
-	
-				// Xóa dữ liệu cũ nếu có
+
 				container.innerHTML = '';
-	
+
 				if (data.length === 0) {
 					khongCoSanPham.style.display = 'block';
 					return;
 				}
 				khongCoSanPham.style.display = 'none';
-	
+
 				data.forEach(sp => {
 					const li = document.createElement('li');
-					li.className = 'sanPham'; // <- Quan trọng để filter nhận ra
-	
+					li.className = 'sanPham';
+
 					li.innerHTML = `
 						<div class="product-card">
 							<img src="${sp.hinhAnh}" alt="${sp.tenSanPham}" />
 							<h3>${sp.tenSanPham}</h3>
-							<div class="price">${sp.giaBan.toLocaleString('vi-VN')}₫</div>
-							<div class="soLuong">Còn lại: ${sp.soLuongTon}</div>
+							<div class="price">${Number(sp.giaBan).toLocaleString('vi-VN')}₫</div>
+							
 							<div class="product-hover">
 								<a href="/san-pham-chi-tiet/detail/${sp.id}" class="btn btn-detail">Xem chi tiết</a>
 								<button class="btn btn-cart" onclick="themVaoGioHang(${sp.id})">Thêm vào giỏ</button>
 							</div>
 						</div>
 					`;
-	
+
 					container.appendChild(li);
 				});
-	
+
 				document.querySelector('.contain-products').style.display = 'block';
+
+				// Sau khi đổ dữ liệu, khởi tạo lại các chức năng lọc/sắp xếp
+				postLoadInit();
 			} catch (err) {
 				console.error("Lỗi khi load sản phẩm: ", err);
 			}
 		}
+
+		function postLoadInit() {
+			// Tùy vào logic của bạn, bạn có thể cần gọi lại các hàm như:
+			addEventToProducts();
+			filterGia();
+			filterKhuyenMai();
+			filterSao();
+			filterSort();
+			updatePagination();
+		}
+
 		window.addEventListener("DOMContentLoaded", loadSanPhamDangBan);
-	</script>	
+	</script>
 </body>
 
 </html>

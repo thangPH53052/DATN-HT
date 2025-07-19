@@ -2,6 +2,7 @@ package org.example.datn.Service;
 
 import org.example.datn.Entity.*;
 import org.example.datn.Repository.*;
+import org.example.datn.Response.SPACTResponse;
 import org.example.datn.Response.SanPhamResponse;
 import org.example.datn.dto.SanPhamDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,25 +112,32 @@ public class SanPhamChiTietService {
         return repository.existsBySanPham_IdAndMauSac_IdAndKichThuoc_Id(idSanPham, idMauSac, idKichThuoc);
     }
 
-    public SanPhamResponse layChiTietSanPham(Integer id) {
-        SanPhamChiTiet spct = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm chi tiết với id: " + id));
+    public SPACTResponse layChiTietSanPham(Integer id) {
+    SanPhamChiTiet spct = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm chi tiết với id: " + id));
 
-        SanPham sp = spct.getSanPham();
-        if (sp == null) {
-            throw new RuntimeException("Sản phẩm cha không tồn tại.");
-        }
+    SanPham sp = spct.getSanPham();
 
-        String hinhAnh = (sp.getHinhAnhList() != null && !sp.getHinhAnhList().isEmpty())
-                ? "/uploads/images/" + sp.getHinhAnhList().get(0).getUrl()
-                : "img/default.jpg";
+    return new SPACTResponse(
+            spct.getId(),
+            sp.getTen(),
+            spct.getGiaBan(),
+            spct.getGiaSauKhuyenMai(),
+            sp.getMoTa(),
+            sp.getKichThuoc(),
+            sp.getCanNang(),
+            sp.getDungTich(),
+            sp.getThuongHieu().getTen(),
+            sp.getChatLieu().getTen(),
+            sp.getLoaiKhoa().getTen(),
+            sp.getKieuDay().getTen(),
+            sp.getDanhMuc().getTen(),
+            spct.getMauSac().getTen(),
+            spct.getKichThuoc().getTen(),
+            spct.getSoLuong(),
+            sp.getHinhAnhUrls().stream().map(url -> "/images/" + url).toList()
+    );
+}
 
-        return new SanPhamResponse(
-                spct.getId(),
-                sp.getTen(),
-                spct.getGiaBan(),
-                hinhAnh,
-                spct.getSoLuong());
-    }
 
 }
